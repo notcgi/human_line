@@ -1,0 +1,72 @@
+# override file common for stage and production environment
+version: "3.9"
+services:
+  redis:
+    restart: always
+    networks:
+      - app
+      - traefik_ext
+    volumes:
+      - type: volume
+        source: data_redis
+        target: /data
+
+  postgres:
+    restart: always
+    networks:
+      - app
+      - traefik_ext
+    volumes:
+      - type: volume
+        source: data_postgres
+        target: /var/lib/postgresql/data
+
+  webserver:
+    image: registry.prfl.tech/perfluence-services/blogger-api/nginx:${TAG_CURRENT}
+    restart: always
+    networks:
+      - app
+      - traefik_ext
+    labels:
+      - traefik.http.routers.${TRAEFIK_ROUTER_NAME}.rule=Host(`${APP_HOST}`)
+      - traefik.http.routers.${TRAEFIK_ROUTER_NAME}.tls=true
+      - traefik.http.routers.${TRAEFIK_ROUTER_NAME}.tls.certresolver=le
+      - traefik.http.middlewares.${TRAEFIK_ROUTER_NAME}.compress=true
+      - traefik.http.routers.${TRAEFIK_ROUTER_NAME}.middlewares=${TRAEFIK_ROUTER_NAME}@docker
+      - traefik.docker.network=traefik_ext
+    volumes:
+      - type: volume
+        source: data_php-fpm
+        target: /app/storage
+
+  init-job:
+    image: registry.prfl.tech/perfluence-services/blogger-api/php-fpm:${TAG_CURRENT}
+    restart: "no"
+    networks:
+      - app
+      - traefik_ext
+
+  php-fpm:
+    image: registry.prfl.tech/perfluence-services/blogger-api/php-fpm:${TAG_CURRENT}
+    restart: always
+    networks:
+      - app
+      - traefik_ext
+    volumes:
+      - type: volume
+        source: data_php-fpm
+        target: /app/storage
+      - type: bind
+        source: ${STAGE_FIREBASE_CREDENTIALS}
+        target: /app/config/firebase.json
+
+networks:
+  app:
+    driver: bridge
+  traefik_ext:
+    external: true
+
+volumes:
+  data_redis:
+  data_postgres:
+  data_php-fpm:

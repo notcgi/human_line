@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+    php-fpm:
+        environment:
+            XDEBUG_MODE: "debug"
+            XDEBUG_CONFIG: "client_port=9000"
+        build:
+            context: .
+            dockerfile: docker/php-fpm/Dockerfile
+        volumes:
+            - type: bind
+              source: .
+              target: /app
+volumes:
+    data_php-fpm:
