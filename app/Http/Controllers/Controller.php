@@ -13,7 +13,7 @@ class Controller extends BaseController
         $data = request()->validate([
             'sourceKladr' => 'required|string',
             'targetKladr' => 'required|string',
-            'weight' => 'required|int',
+            'weight' => 'required|numeric',
         ]);
         $response = [];
         foreach (config('services.delivery.providers') as $providerClass) {

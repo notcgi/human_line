@@ -19,10 +19,18 @@ class DeliveryTest extends TestCase
         $data = [
             'sourceKladr' => Str::random(),
             'targetKladr' => Str::random(),
-            'weight' => random_int(1,10),
+            'weight' => random_int(10,100)/10,
         ];
         $this->get(route('calculate', $data))
             ->dump()
-            ->assertSuccessful();
+            ->assertSuccessful()
+            ->assertJsonCount(2)
+            ->assertJsonStructure([
+                '*' => [
+                    'price',
+                    'date',
+                    'error'
+                ]
+            ]);
     }
 }
