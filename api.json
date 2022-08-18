@@ -1,0 +1,83 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Human Line",
+        "description": "Test task",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https"
+        }
+    ],
+    "paths": {
+        "/": {
+            "get": {
+                "summary": "List of available deliveries",
+                "parameters": [
+                    {
+                        "name": "sourceKladr",
+                        "in": "query",
+                        "required": true,
+                        "description": "кладр откуда везем",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "targetKladr",
+                        "in": "query",
+                        "required": true,
+                        "description": "кладр куда везем",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "wight",
+                        "in": "query",
+                        "required": true,
+                        "description": "вес",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of delivery providers with condition",
+                        "content": {
+                            "application/json":{
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "DeliveryProvider": {
+                "type": "object",
+                "properties": {
+                    "price": {
+                        "type": "number"
+                    },
+                    "date": {
+                        "type": "string"
+                    },
+                    "error": {
+                        "type": "string",
+                        "description": "empty string if OK"
+                    }
+                }
+            }
+        }
+    }
+}
